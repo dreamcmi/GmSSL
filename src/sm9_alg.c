@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <time.h>
 #include <gmssl/hex.h>
 #include <gmssl/mem.h>
 #include <gmssl/sm9.h>
@@ -187,15 +188,17 @@ void sm9_bn_sub(sm9_bn_t ret, const sm9_bn_t a, const sm9_bn_t b)
 
 int sm9_bn_rand_range(sm9_bn_t r, const sm9_bn_t range)
 {
-	FILE *fp;
+    time_t t;
 	uint8_t buf[256];
 
-	fp = fopen("/dev/urandom", "rb");
+    srand((unsigned)time(&t));
+
 	do {
-		fread(buf, 1, 256, fp);
+        for (size_t i = 0; i < 256; i++) {
+            buf[i] = rand();
+        }
 		sm9_bn_from_bytes(r, buf);
 	} while (sm9_bn_cmp(r, range) >= 0);
-	fclose(fp);
 	return 1;
 }
 

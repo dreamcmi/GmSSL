@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 #include <gmssl/rand.h>
 #include <gmssl/error.h>
 
@@ -19,28 +20,13 @@
 
 int rand_bytes(uint8_t *buf, size_t len)
 {
-	FILE *fp;
-	if (!buf) {
-		error_print();
-		return -1;
-	}
-	if (len > RAND_MAX_BUF_SIZE) {
-		error_print();
-		return -1;
-	}
-	if (!len) {
-		return 0;
-	}
+    time_t t;
+    srand((unsigned)time(&t));
 
-	if (!(fp = fopen("/dev/urandom", "rb"))) {
-		error_print();
-		return -1;
-	}
-	if (fread(buf, 1, len, fp) != len) {
-		error_print();
-		fclose(fp);
-		return -1;
-	}
-	fclose(fp);
+    for(size_t i = 0; i < len; i++)
+    {
+        buf[i] = rand();
+    }
+
 	return 1;
 }
